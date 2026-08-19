@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 
 export default function ScannerScreen({ navigation }: any) {
   const [qualityScore, setQualityScore] = useState<number | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = () => {
+    setIsUploading(true);
     // Simulating POST request to /vision
     setTimeout(() => {
       setQualityScore(85);
+      setIsUploading(false);
     }, 1000);
   };
 
@@ -22,8 +25,12 @@ export default function ScannerScreen({ navigation }: any) {
       <Text style={styles.title}>AI Produce Scanner</Text>
       
       {!qualityScore ? (
-        <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-          <Text style={styles.uploadText}>Upload Produce Photo</Text>
+        <TouchableOpacity style={styles.uploadButton} onPress={handleUpload} disabled={isUploading}>
+          {isUploading ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.uploadText}>Upload Produce Photo</Text>
+          )}
         </TouchableOpacity>
       ) : (
         <View style={styles.resultContainer}>

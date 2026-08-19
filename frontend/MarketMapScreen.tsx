@@ -1,11 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import api from './api';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import axios from 'axios';
+
+const { height } = Dimensions.get('window');
+
+// Mock coordinates for the mandis around New Delhi since the backend API does not currently return lat/lng
+const MOCK_MANDI_COORDINATES: Record<string, { latitude: number, longitude: number }> = {
+  "market_a": { latitude: 28.7041, longitude: 77.1025 },
+  "market_b": { latitude: 28.5355, longitude: 77.3910 },
+  "market_c": { latitude: 28.4595, longitude: 77.0266 },
+};
 
 export default function MarketMapScreen({ route }: any) {
   const { qualityScore } = route.params;
   const [markets, setMarkets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Farmer's mock location (New Delhi)
+  const farmerRegion = {
+    latitude: 28.6139,
+    longitude: 77.2090,
+    latitudeDelta: 0.5,
+    longitudeDelta: 0.5,
+  };
 
   useEffect(() => {
     fetchBestMarkets();
@@ -13,16 +31,15 @@ export default function MarketMapScreen({ route }: any) {
 
   const fetchBestMarkets = async () => {
     try {
-      // Hardcoded payload as requested
       const payload = {
-        farmer_lat: 28.6139,
-        farmer_lon: 77.2090,
+        farmer_lat: farmerRegion.latitude,
+        farmer_lon: farmerRegion.longitude,
         batch_weight_quintals: 10.0,
         quality_score: qualityScore,
         vehicle_type: 'mini-truck'
       };
       
-      const response = await api.post('/optimize-route', payload);
+      const response = await axios.post('http://10.108.98.115:8000/api/v1/optimize-route', payload);
       setMarkets(response.data);
     } catch (error) {
       console.error("Failed to fetch markets:", error);
@@ -52,20 +69,53 @@ export default function MarketMapScreen({ route }: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Optimized Routes</Text>
-      <Text style={styles.subtitle}>Based on Q-Score: {qualityScore}</Text>
-      
-      {loading ? (
-        <ActivityIndicator size="large" color="#10b981" style={styles.loader} />
-      ) : (
-        <FlatList
-          data={markets}
-          keyExtractor={(item) => item.id}
-          renderItem={renderMarketCard}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      {/* Map Section taking up top 45% of screen */}
+      <View style={styles.mapContainer}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={farmerRegion}
+        >
+          {/* Farmer Location */}
+          <Marker 
+            coordinate={{ latitude: farmerRegion.latitude, longitude: farmerRegion.longitude }} 
+            title="Your Farm"
+            pinColor="blue"
+          />
+          
+          {/* Mandi Locations */}
+          {markets.map((market) => {
+            const coords = MOCK_MANDI_COORDINATES[market.id] || { latitude: 28.6139, longitude: 77.2090 };
+            return (
+              <Marker
+                key={market.id}
+                coordinate={coords}
+                title={market.name}
+                description={`Net Profit: ₹${market.r_net.toFixed(2)}`}
+                pinColor="green"
+              />
+            );
+          })}
+        </MapView>
+      </View>
+
+      {/* List Section taking up bottom portion */}
+      <View style={styles.listContainer}>
+        <Text style={styles.title}>Optimized Routes</Text>
+        <Text style={styles.subtitle}>Based on Q-Score: {qualityScore}</Text>
+        
+        {loading ? (
+          <ActivityIndicator size="large" color="#10b981" style={styles.loader} />
+        ) : (
+          <FlatList
+            data={markets}
+            keyExtractor={(item) => item.id}
+            renderItem={renderMarketCard}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -74,21 +124,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
+  },
+  mapContainer: {
+    height: height * 0.45,
+    width: '100%',
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  listContainer: {
+    flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 15,
   },
   loader: {
     marginTop: 50,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#ffffff',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#aaaaaa',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   listContent: {
     paddingBottom: 40,

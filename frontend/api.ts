@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// 10.0.2.2 is the localhost alias for Android Emulators
 const api = axios.create({
-  baseURL: 'http://10.0.2.2:8000/api/v1',
+  // Make sure it is exactly http, not https, and includes your exact IP and port
+  baseURL: 'http://10.108.98.115:8000/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
