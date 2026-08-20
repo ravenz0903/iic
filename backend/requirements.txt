@@ -4,3 +4,7 @@ ultralytics
 opencv-python
 pydantic
 sqlalchemy
+alembic
+aiosqlite
+python-multipart
+pillow

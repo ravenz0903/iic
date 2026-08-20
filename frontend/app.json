@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "AI Produce Intelligence",
+    "slug": "ai-produce-intelligence",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0a0a0f"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0a0a0f"
+      }
+    }
+  }
+}

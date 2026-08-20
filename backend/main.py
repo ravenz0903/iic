@@ -1,13 +1,12 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List
 
-from router_engine import calculate_best_market
+from database import init_db
+from routers import scan, batches, markets, prices, copilot, logistics, listings, matching, offers
 
-app = FastAPI(title="AI Produce Intelligence Platform API")
+app = FastAPI(title="AI Produce Intelligence Platform")
 
-# Add CORS Middleware to allow connections from React Native frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,37 +15,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Pydantic models for Requests
-class RouteOptimizationRequest(BaseModel):
-    farmer_lat: float
-    farmer_lon: float
-    batch_weight_quintals: float
-    quality_score: float
-    vehicle_type: str
+@app.on_event("startup")
+def on_startup():
+    init_db()
+    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "uploads"), exist_ok=True)
 
-# Pydantic models for Responses
-class MarketRouteResult(BaseModel):
-    id: str
-    name: str
-    distance_km: float
-    base_price_per_quintal: float
-    toll_fees: float
-    loading_charge: float
-    cess_percent: float
-    r_net: float
-    realized_price: float
-    deductions: float
+app.include_router(scan.router)
+app.include_router(batches.router)
+app.include_router(markets.router)
+app.include_router(prices.router)
+app.include_router(copilot.router)
+app.include_router(logistics.router)
+app.include_router(listings.router)
+app.include_router(matching.router)
+app.include_router(offers.router)
 
-@app.post("/api/v1/optimize-route", response_model=List[MarketRouteResult])
-def optimize_route(request: RouteOptimizationRequest):
-    """
-    Endpoint to calculate the most profitable market routes based on weight, 
-    quality, and transport factors.
-    """
-    sorted_markets = calculate_best_market(
-        batch_weight_quintals=request.batch_weight_quintals,
-        quality_score=request.quality_score,
-        vehicle_type=request.vehicle_type
-    )
-    
-    return sorted_markets
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to AI Produce Intelligence Platform API"}
