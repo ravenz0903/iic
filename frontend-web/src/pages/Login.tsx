@@ -4,7 +4,14 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 // Use environment variable, fallback to empty string to avoid crashes, but warn the user.
 const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || "";
 
-export const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+export const LoginPage: React.FC<{ onLogin?: () => void }> = ({ onLogin }) => {
+  const handleLogin = () => {
+    if (onLogin) {
+      onLogin();
+    } else {
+      window.location.href = '/';
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 text-center space-y-6">
@@ -31,7 +38,7 @@ export const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                   <GoogleLogin
                     onSuccess={(credentialResponse) => {
                       console.log('Login Success:', credentialResponse);
-                      onLogin();
+                      handleLogin();
                     }}
                     onError={() => {
                       console.error('Login Failed');
@@ -53,7 +60,7 @@ export const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           </div>
           
           <button 
-            onClick={onLogin}
+            onClick={handleLogin}
             className="mt-6 text-xs font-bold text-gray-500 hover:text-green-800 underline transition"
           >
             Bypass Login (Prototype Mode)
@@ -63,3 +70,6 @@ export const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     </div>
   );
 };
+
+export const Login = LoginPage;
+
