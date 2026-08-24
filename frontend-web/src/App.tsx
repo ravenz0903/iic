@@ -19,6 +19,14 @@ import { OffersPage } from './pages/Offers';
 import { TraceabilityPage } from './pages/Traceability';
 import { SimpleModePage } from './pages/SimpleMode';
 
+// Farm Intelligence & Extra Pages
+import { MyFarm } from './pages/MyFarm';
+import { WeatherRisk } from './pages/WeatherRisk';
+import { YieldPrediction } from './pages/YieldPrediction';
+import { SatelliteIntel } from './pages/SatelliteIntel';
+import { SellVsWait } from './pages/SellVsWait';
+import { Login } from './pages/Login';
+
 export const App: React.FC = () => {
   const [copilotOpen, setCopilotOpen] = useState(false);
 
@@ -47,6 +55,12 @@ export const App: React.FC = () => {
               <Route path="/offers" element={<OffersPage />} />
               <Route path="/traceability" element={<TraceabilityPage />} />
               <Route path="/simple-mode" element={<SimpleModePage />} />
+              <Route path="/my-farm" element={<MyFarm />} />
+              <Route path="/weather-risk" element={<WeatherRisk />} />
+              <Route path="/yield-prediction" element={<YieldPrediction />} />
+              <Route path="/satellite-intel" element={<SatelliteIntel />} />
+              <Route path="/sell-vs-wait" element={<SellVsWait />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/copilot" element={<Dashboard />} />
             </Routes>
           </main>

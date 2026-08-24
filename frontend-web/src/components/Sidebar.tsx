@@ -12,10 +12,15 @@ import {
   MessageSquareQuote, 
   GitCommit, 
   Sparkles,
-  Zap
+  Zap,
+  Sprout,
+  CloudRain,
+  Satellite,
+  Clock,
+  LineChart
 } from 'lucide-react';
 
-const navigationItems = [
+const coreNavigationItems = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
   { name: 'AI Scanner', path: '/scanner', icon: Camera },
   { name: 'Market Intelligence', path: '/markets', icon: TrendingUp },
@@ -28,6 +33,14 @@ const navigationItems = [
   { name: 'Offer Negotiations', path: '/offers', icon: MessageSquareQuote },
   { name: 'Batch Traceability', path: '/traceability', icon: GitCommit },
   { name: 'Farmer Simple Mode', path: '/simple-mode', icon: Zap },
+];
+
+const farmIntelligenceItems = [
+  { name: 'My Farm & Soil', path: '/my-farm', icon: Sprout },
+  { name: 'Weather & Risk', path: '/weather-risk', icon: CloudRain },
+  { name: 'Yield Prediction', path: '/yield-prediction', icon: LineChart },
+  { name: 'Satellite Intel', path: '/satellite-intel', icon: Satellite },
+  { name: 'Sell vs Wait', path: '/sell-vs-wait', icon: Clock },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -47,29 +60,56 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation List */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-gray-500">
-          Core Operations
+      <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
+        <div className="space-y-1">
+          <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+            Core Operations
+          </div>
+          {coreNavigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                <span>{item.name}</span>
+              </NavLink>
+            );
+          })}
         </div>
-        {navigationItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`
-              }
-            >
-              <Icon className="w-4 h-4 shrink-0" />
-              <span>{item.name}</span>
-            </NavLink>
-          );
-        })}
+
+        <div className="space-y-1 pt-2 border-t border-white/5">
+          <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-emerald-400/80">
+            Farm Intel & Risk
+          </div>
+          {farmIntelligenceItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                <span>{item.name}</span>
+              </NavLink>
+            );
+          })}
+        </div>
       </nav>
 
       {/* Copilot Quick Banner */}
